@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_acceptance"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Issue"
+    tools:showIn="@layout/app_bar_issue">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click on all issues you are facing"
+        android:textSize="17sp"
+        android:layout_marginTop="60dp"/>
+
+    <com.dd.morphingbutton.MorphingButton
+        android:id="@+id/btnMorph1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:textColor="#fff"
+        android:text="Lights not working"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:visibility="visible"
+        android:layout_marginTop="10dp"/>
+
+    <com.dd.morphingbutton.MorphingButton
+        android:id="@+id/btnMorph2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_centerVertical="true"
+        android:textColor="#fff"
+        android:layout_marginTop="10dp"
+        android:text="Shower problem"
+        android:visibility="visible"/>
+
+    <com.dd.morphingbutton.MorphingButton
+        android:id="@+id/btnMorph3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:textColor="#fff"
+        android:text="TV problem"
+        android:visibility="visible"
+        android:layout_marginTop="10dp"/>
+
+    <com.dd.morphingbutton.MorphingButton
+        android:id="@+id/btnMorph4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:textColor="#fff"
+        android:text="Privacy concern"
+        android:visibility="visible"/>
+
+    <com.dd.morphingbutton.MorphingButton
+        android:id="@+id/btnMorph5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:textColor="#fff"
+        android:text="I need urgent help!"
+        android:visibility="visible"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tempe5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/temp5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type Nature of problem/ Complain"
+            android:inputType="text"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/submit"
+        android:layout_width="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:background="@color/colorPrimary"
+        android:text="Submit"
+        android:textColor="#fff"></android.support.v7.widget.AppCompatButton>
+
+
+
+</LinearLayout>
