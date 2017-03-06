@@ -2,6 +2,9 @@ package android.sankara.com;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.sankara.com.model.Post;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -10,7 +13,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -19,6 +27,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.dd.morphingbutton.MorphingButton;
 
@@ -30,11 +39,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import it.gmariotti.cardslib.library.internal.Card;
 
 public class Issue extends AppCompatActivity {
     int room;
     private ProgressDialog mProgressDialog;
+    private String checkedItem = "1";
+    EditText _emailText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +55,10 @@ public class Issue extends AppCompatActivity {
         setContentView(R.layout.app_bar_issue);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+       _emailText=(EditText)findViewById(R.id.issue);
         room = getIntent().getIntExtra("id", 1);
         setTitle("Select facility to report");
-
-/*
+        MyShortcuts.setDefaults("radio", checkedItem, getBaseContext());
         if (MyShortcuts.hasInternetConnected(this)) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage("Getting data ...");
@@ -55,9 +68,10 @@ public class Issue extends AppCompatActivity {
 
 //            spinner.setItems("Room 1", "Room 2", "Room 3", "Room 4", "Presidential Room®");
             getFacility();
+
         } else {
             MyShortcuts.showToast("Please turn on your data connection!", getBaseContext());
-        }*/
+        }
 //        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.content_acceptance);
 
        /* final MorphingButton btnMorph1 = new MorphingButton(this);
@@ -81,7 +95,7 @@ public class Issue extends AppCompatActivity {
         btnMorph5.setText("5");
         linearLayout.addView(btnMorph5);*/
 
-        final MorphingButton btnMorph1 = (MorphingButton) findViewById(R.id.btnMorph1);
+       /* final MorphingButton btnMorph1 = (MorphingButton) findViewById(R.id.btnMorph1);
         btnMorph1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,17 +130,17 @@ public class Issue extends AppCompatActivity {
                 morphToSuccess(btnMorph5);
             }
         });
-
+*/
 
         Button btn = (Button) findViewById(R.id.submit);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MyShortcuts.showToast("Your concern submitted successfully, we will working on it shortly!", getBaseContext());
-                Intent intent = new Intent(getBaseContext(), ChatActivity.class);
-                EditText et = (EditText)findViewById(R.id.issue);
-                intent.putExtra("issue",et.getText().toString());
-                startActivity(intent);
+
+                if (validate()) {
+                    submit();
+                }
             }
         });
 
@@ -140,8 +154,8 @@ public class Issue extends AppCompatActivity {
 //        Log.e("JSON serializing", js.toString());
         String tag_string_req = "req_Categories";
 
-        Log.e("url is", MyShortcuts.baseURL() + "/sankara/api/roomJson.php");
-        StringRequest strReq = new StringRequest(Request.Method.GET, MyShortcuts.baseURL() + "/sankara/api/roomJson.php", new Response.Listener<String>() {
+        Log.e("url is", MyShortcuts.baseURL() + "/sankara/api/facilityJson.php");
+        StringRequest strReq = new StringRequest(Request.Method.GET, MyShortcuts.baseURL() + "/sankara/api/facilityJson.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.e("Response from server is", response.toString());
@@ -151,17 +165,49 @@ public class Issue extends AppCompatActivity {
                 try {
 
                     JSONArray res = new JSONArray(response);
+                    final RadioGroup rgp = (RadioGroup) findViewById(R.id.radiogroup);
 
+//                    LinearLayout layout = (LinearLayout) findViewById(R.id.content_acceptance);
 
                     for (int i = 0; i < res.length(); i++) {
 
                         JSONObject item = res.getJSONObject(i);
                         String facilityName = item.getString("facility_name");
 
+                        RadioButton rbn = new RadioButton(getBaseContext());
+                        rbn.setId(i);
+                        rbn.setText(facilityName);
+                        rbn.setTextColor(Color.BLACK);
+                        rbn.setTag(item.getString("id"));
+                        if (i == 1) {
+                            rbn.setChecked(true);
+                        }
+                        rgp.addView(rbn);
 
+                       /* CheckBox chkTeamName = new CheckBox(getBaseContext());
+                        chkTeamName.setText(facilityName);
+                        chkTeamName.setTag(facilityName);
+                        chkTeamName.setTextColor(Color.BLACK);
+                        chkTeamName.setOnClickListener(Issue.this);
+                        layout.addView(chkTeamName);*/
 
                     }
+
+
+                    rgp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                            View checkedButton = rgp.findViewById(checkedId);
+
+                            int checkedIndex = rgp.indexOfChild(checkedButton);
+                            checkedItem = checkedButton.getTag().toString();
+                            Log.e("checked", checkedItem);
+
+                            MyShortcuts.setDefaults("radio", checkedItem, getBaseContext());
+                        }
+                    });
 //
+
                     mProgressDialog.dismiss();
 
                     if (res.length() == 0) {
@@ -217,6 +263,29 @@ public class Issue extends AppCompatActivity {
         Log.e("request is", strReq.toString());
     }
 
+    private void submit(){
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("room_id", getIntent().getIntExtra("id", 1)+"");
+            jsonObject.put("facility_id",MyShortcuts.getDefaults("radio",getBaseContext()));
+            EditText et = (EditText) findViewById(R.id.issue);
+            jsonObject.put("problem",et.getText().toString());
+            jsonArray.put(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Post.postArray(jsonArray, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Intent intent = new Intent(getBaseContext(), ChatActivity.class);
+                EditText et = (EditText) findViewById(R.id.issue);
+                intent.putExtra("issue", et.getText().toString());
+                startActivity(intent);
+            }
+        });
+    }
+
     private void morphToSuccess(final MorphingButton btnMorph) {
         btnMorph.setVisibility(View.VISIBLE);
         MorphingButton.Params circle = MorphingButton.Params.create()
@@ -228,5 +297,35 @@ public class Issue extends AppCompatActivity {
                 .colorPressed(getResources().getColor(R.color.mb_green_dark))
                 .icon(R.drawable.ic_done);
         btnMorph.morph(circle);
+    }
+
+    /*@Override
+    public void onClick(View v) {
+        if (v.getTag().equals("")) {
+
+        }
+        MyShortcuts.showToast(v.getTag().toString(), getBaseContext());
+    }*/
+
+   /* @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+    }*/
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String email = _emailText.getText().toString();
+
+
+        if (email.isEmpty()) {
+            _emailText.setError("Enter some input");
+            valid = false;
+        } else {
+            _emailText.setError(null);
+        }
+
+
+        return valid;
     }
 }

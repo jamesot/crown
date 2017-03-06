@@ -8,14 +8,21 @@
     android:layout_marginTop="50dp"
     tools:context=".Issue"
     tools:showIn="@layout/app_bar_issue">
-<!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/content_acceptance"
         android:orientation="vertical">
+        <RadioGroup
+            android:id="@+id/radiogroup"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical" />
 
-    </LinearLayout>-->
+    </LinearLayout>
 
 
      <!--TextView
@@ -25,7 +32,7 @@
          android:textSize="17sp"
          android:layout_marginTop="60dp"/>-->
 
-    <com.dd.morphingbutton.MorphingButton
+    <!--<com.dd.morphingbutton.MorphingButton
         android:id="@+id/btnMorph1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -93,7 +100,7 @@
         android:layout_marginTop="10dp"
         android:textColor="#fff"
         android:text="I need urgent help!"
-        android:visibility="visible"/>
+        android:visibility="visible"/>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

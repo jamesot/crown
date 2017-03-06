@@ -203,7 +203,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
         final ChatMessage message = new ChatMessage();
         message.setMessageStatus(Status.SENT);
-        message.setMessageText(getIntent().getStringExtra("issue"));
+        message.setMessageText(messageText);
         message.setUserType(userType);
         message.setMessageTime(new Date().getTime());
         chatMessages.add(message);
