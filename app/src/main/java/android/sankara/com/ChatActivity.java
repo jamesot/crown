@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.sankara.com.model.Post;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +32,12 @@ import android.sankara.com.widgets.Emoji;
 import android.sankara.com.widgets.EmojiView;
 import android.sankara.com.widgets.SizeNotifierRelativeLayout;
 
+import com.android.volley.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class ChatActivity extends ActionBarActivity implements SizeNotifierRelativeLayout.SizeNotifierRelativeLayoutDelegate, NotificationCenter.NotificationCenterDelegate {
 
@@ -44,7 +52,9 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
     private int keyboardHeight;
     private boolean keyboardVisible;
     private WindowManager.LayoutParams windowLayoutParams;
-
+    Handler h = new Handler();
+    Runnable runnable;
+    int delay = 4000; //15 seconds
 
     private EditText.OnKeyListener keyListener = new View.OnKeyListener() {
         @Override
@@ -57,8 +67,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
                 EditText editText = (EditText) v;
 
-                if(v==chatEditText1)
-                {
+                if (v == chatEditText1) {
                     sendMessage(editText.getText().toString(), UserType.OTHER);
                 }
 
@@ -75,8 +84,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
         @Override
         public void onClick(View v) {
 
-            if(v==enterChatView1)
-            {
+            if (v == enterChatView1) {
                 sendMessage(chatEditText1.getText().toString(), UserType.OTHER);
             }
 
@@ -102,9 +110,9 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
         @Override
         public void afterTextChanged(Editable editable) {
-            if(editable.length()==0){
+            if (editable.length() == 0) {
                 enterChatView1.setImageResource(R.drawable.ic_chat_send);
-            }else{
+            } else {
                 enterChatView1.setImageResource(R.drawable.ic_chat_send_active);
             }
         }
@@ -136,7 +144,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
         });
 
 
-        emojiButton = (ImageView)findViewById(R.id.emojiButton);
+        emojiButton = (ImageView) findViewById(R.id.emojiButton);
 
         emojiButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +153,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
             }
         });
 
-         listAdapter = new ChatListAdapter(chatMessages, this);
+        listAdapter = new ChatListAdapter(chatMessages, this);
 
         chatListView.setAdapter(listAdapter);
 
@@ -160,20 +168,86 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
 
-        final ChatMessage message = new ChatMessage();
+        Handler h = new Handler();
+        int delay = 15000; //15 seconds
+        Runnable runnable;
+
+
+        /*final ChatMessage message = new ChatMessage();
         message.setMessageStatus(Status.SENT);
         message.setMessageText(getIntent().getStringExtra("issue"));
         message.setUserType(UserType.OTHER);
         message.setMessageTime(new Date().getTime());
         chatMessages.add(message);
 
-        if(listAdapter!=null)
+        if (listAdapter != null)
             listAdapter.notifyDataSetChanged();
         final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
-        exec.schedule(new Runnable(){
+        exec.schedule(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
+                message.setMessageStatus(Status.DELIVERED);
+
+                final ChatMessage message = new ChatMessage();
+                message.setMessageStatus(Status.SENT);
+                message.setMessageText("we're on it!.");
+//                message.setMessageText(messageText);
+                message.setUserType(UserType.SELF);
+                message.setMessageTime(new Date().getTime());
+                chatMessages.add(message);
+
+                ChatActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        listAdapter.notifyDataSetChanged();
+                    }
+                });
+
+
+            }
+        }, 1, TimeUnit.SECONDS);
+*/
+    }
+
+    @Override
+    protected void onStart() {
+//start handler as activity become visible
+
+        h.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                getChat();
+                runnable = this;
+
+                h.postDelayed(runnable, delay);
+            }
+        }, delay);
+
+        super.onStart();
+    }
+
+
+    private void sendMessage(final String messageText, final UserType userType) {
+       /* if(messageText.trim().length()==0)
+            return;*/
+
+        final ChatMessage message = new ChatMessage();
+        message.setMessageStatus(Status.SENT);
+        message.setMessageText(messageText);
+        message.setUserType(userType);
+        message.setMessageTime(new Date().getTime());
+        chatMessages.add(message);
+
+        if (listAdapter != null)
+            listAdapter.notifyDataSetChanged();
+
+        // Mark message as delivered after one second
+
+        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+
+        exec.schedule(new Runnable() {
+            @Override
+            public void run() {
                 message.setMessageStatus(Status.DELIVERED);
 
                 final ChatMessage message = new ChatMessage();
@@ -196,52 +270,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
     }
 
-    private void sendMessage(final String messageText, final UserType userType)
-    {
-       /* if(messageText.trim().length()==0)
-            return;*/
-
-        final ChatMessage message = new ChatMessage();
-        message.setMessageStatus(Status.SENT);
-        message.setMessageText(messageText);
-        message.setUserType(userType);
-        message.setMessageTime(new Date().getTime());
-        chatMessages.add(message);
-
-        if(listAdapter!=null)
-            listAdapter.notifyDataSetChanged();
-
-        // Mark message as delivered after one second
-
-        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-
-        exec.schedule(new Runnable(){
-            @Override
-            public void run(){
-               message.setMessageStatus(Status.DELIVERED);
-
-                final ChatMessage message = new ChatMessage();
-                message.setMessageStatus(Status.SENT);
-                message.setMessageText("we're on it!.");
-//                message.setMessageText(messageText);
-                message.setUserType(UserType.SELF);
-                message.setMessageTime(new Date().getTime());
-                chatMessages.add(message);
-
-                ChatActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        listAdapter.notifyDataSetChanged();
-                    }
-                });
-
-
-            }
-        }, 1, TimeUnit.SECONDS);
-
-    }
-
-    private Activity getActivity()
-    {
+    private Activity getActivity() {
         return this;
     }
 
@@ -329,8 +358,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
                 return;
             }
 
-        }
-        else {
+        } else {
             removeEmojiWindow();
             if (sizeNotifierRelativeLayout != null) {
                 sizeNotifierRelativeLayout.post(new Runnable() {
@@ -365,7 +393,6 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
     }
 
 
-
     /**
      * Hides the emoji popup
      */
@@ -383,7 +410,6 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
     public boolean isEmojiPopupShowing() {
         return showingEmoji;
     }
-
 
 
     /**
@@ -467,6 +493,7 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
     /**
      * Get the system status bar height
+     *
      * @return
      */
     public int getStatusBarHeight() {
@@ -480,8 +507,60 @@ public class ChatActivity extends ActionBarActivity implements SizeNotifierRelat
 
     @Override
     protected void onPause() {
+        h.removeCallbacks(runnable); //stop handler when activity not visible
         super.onPause();
 
         hideEmojiPopup();
+    }
+
+
+    private void getChat() {
+
+
+        Post.getData("/sankara/api/serverJson.php", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+
+                    if (jsonArray.length() > Integer.parseInt(MyShortcuts.getDefaults("chat_Watcher", getBaseContext()))) {
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            if (jsonObject.getString("direction").equals("IN")) {
+                                final ChatMessage message = new ChatMessage();
+                                message.setMessageStatus(Status.SENT);
+                                message.setMessageText(jsonObject.getString("conversation"));
+                                message.setUserType(UserType.OTHER);
+                                message.setMessageTime(new Date().getTime());
+                                chatMessages.add(message);
+                            } else {
+                                final ChatMessage message = new ChatMessage();
+                                message.setMessageStatus(Status.SENT);
+                                message.setMessageText(jsonObject.getString("conversation"));
+                                message.setUserType(UserType.SELF);
+                                message.setMessageTime(new Date().getTime());
+                                chatMessages.add(message);
+                            }
+                            if (listAdapter != null)
+                                listAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    MyShortcuts.setDefaults("chat_Watcher", jsonArray.length() + "", getBaseContext());
+
+                    if (listAdapter != null)
+                        listAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+//                    Toast.makeText(getBaseContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("JSON ERROR", e.toString());
+
+                }
+
+
+            }
+        });
     }
 }

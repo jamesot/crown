@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Sankara Hotel");
+        MyShortcuts.setDefaults("chat_Watcher", "0", getBaseContext());
+
 //        getIntent().getStringExtra("Sankara Hotel");
 
         // Example of a call to a native method
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native String stringFromJNI();
+//    public native String stringFromJNI();
 
     private void getRooms() {
         // Toast.makeText(getBaseContext(), "Inside function!", Toast.LENGTH_SHORT).show();

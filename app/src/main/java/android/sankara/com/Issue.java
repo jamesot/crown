@@ -136,9 +136,10 @@ public class Issue extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MyShortcuts.showToast("Your concern submitted successfully, we will working on it shortly!", getBaseContext());
 
                 if (validate()) {
+                    MyShortcuts.showToast("Your concern submitted successfully, we will working on it shortly!", getBaseContext());
+
                     submit();
                 }
             }
@@ -272,18 +273,21 @@ public class Issue extends AppCompatActivity {
             EditText et = (EditText) findViewById(R.id.issue);
             jsonObject.put("problem",et.getText().toString());
             jsonArray.put(jsonObject);
+
+            Log.e("data",jsonArray.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Post.postArray(jsonArray, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                Intent intent = new Intent(getBaseContext(), ChatActivity.class);
-                EditText et = (EditText) findViewById(R.id.issue);
-                intent.putExtra("issue", et.getText().toString());
-                startActivity(intent);
+
             }
         });
+        Intent intent = new Intent(getBaseContext(), ChatActivity.class);
+        EditText et = (EditText) findViewById(R.id.issue);
+        intent.putExtra("issue", et.getText().toString());
+        startActivity(intent);
     }
 
     private void morphToSuccess(final MorphingButton btnMorph) {

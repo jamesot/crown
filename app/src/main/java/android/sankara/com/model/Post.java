@@ -31,16 +31,17 @@ public class Post {
 //    169.254.85.197
 
     public static void postArray(JSONArray jsonArray, Response.Listener<JSONArray> response) {
+        Log.e("url",MyShortcuts.baseURL()+"/sankara/api/clientJson.php");
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST,
                 MyShortcuts.baseURL() + "/sankara/api/clientJson.php", jsonArray, response, new Error()) {
-
         };
         AppController.getInstance().addToRequestQueue(jsonArrayRequest);
+
     }
 
     public static void PostData(String url, JSONObject parameter, Response.Listener<JSONObject> response) {
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, baseURL + url, parameter,
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,  MyShortcuts.baseURL() + url, parameter,
                 response, new Error()) {
         };
         // Adding request to request queue
@@ -73,7 +74,7 @@ public class Post {
 
     public static void getData(String url, Response.Listener<String> response) {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, baseURL + url, response, new Error());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,  MyShortcuts.baseURL() + url, response, new Error());
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(stringRequest);
         Log.e("request is", stringRequest.toString());
